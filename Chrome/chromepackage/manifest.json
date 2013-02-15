@@ -1,0 +1,9 @@
+{
+  "name": "TagLib Audio Meta-Data Library",
+  "version": "${FBSTRING_PLUGIN_VERSION}",
+  "description": "TagLib Audio Meta-Data Library port for web browsers",
+
+	"plugins": [
+    { "path": "npTagLib.dll", "public": true }
+  ]
+}
