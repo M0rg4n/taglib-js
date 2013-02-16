@@ -1,3 +1,6 @@
 [submodule "firebreath"]
 	path = firebreath
 	url = https://github.com/firebreath/FireBreath.git
+[submodule "taglib"]
+	path = taglib
+	url = https://github.com/taglib/taglib.git
