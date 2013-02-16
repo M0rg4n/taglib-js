@@ -1,6 +1,7 @@
 taglib-js
 =========
-TagLib + FireBreath = TagLib JS API
+<p>TagLib + FireBreath = TagLib JS API</p>
+**Not working yet!**
 
 Build for Mac OS
 ---------
