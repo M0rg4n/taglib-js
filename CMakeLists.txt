@@ -54,3 +54,10 @@ include_platform()
 # 	"${CMAKE_CURRENT_SOURCE_DIR}/sign/passphrase.txt"
 # 	${PROJECT_NAME})
 
+# Link TagLib C++ library
+SET(TAGLIB_ROOT ${PROJECT_SOURCE_DIR}/taglib/build)
+find_library(TAGLIB_LIBRARY tag PATHS ${TAGLIB_ROOT}/lib)
+find_path(TAGLIB_INCLUDE_DIRS taglib/tag.h PATHS ${TAGLIB_ROOT}/include)
+include_directories(${TAGLIB_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} ${TAGLIB_LIBRARY})
+
