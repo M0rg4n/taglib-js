@@ -1,15 +1,8 @@
-/**********************************************************\ 
- 
- Auto-generated Factory.cpp
- 
- This file contains the auto-generated factory methods 
- for the TagLib project
- 
-\**********************************************************/
-
 #include "FactoryBase.h"
-#include "TagLib.h"
+#include "Plugin.h"
 #include <boost/make_shared.hpp>
+
+namespace JS {
 
 class PluginFactory : public FB::FactoryBase
 {
@@ -22,7 +15,7 @@ public:
     ///////////////////////////////////////////////////////////////////////////////
     FB::PluginCorePtr createPlugin(const std::string& mimetype)
     {
-        return boost::make_shared<TagLib>();
+        return boost::make_shared<Plugin>();
     }
     
     ///////////////////////////////////////////////////////////////////////////////
@@ -30,7 +23,7 @@ public:
     ///////////////////////////////////////////////////////////////////////////////
     void globalPluginInitialize()
     {
-        TagLib::StaticInitialize();
+        Plugin::StaticInitialize();
     }
     
     ///////////////////////////////////////////////////////////////////////////////
@@ -38,9 +31,11 @@ public:
     ///////////////////////////////////////////////////////////////////////////////
     void globalPluginDeinitialize()
     {
-        TagLib::StaticDeinitialize();
+        Plugin::StaticDeinitialize();
     }
 };
+    
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @fn getFactoryInstance()
@@ -49,7 +44,6 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 FB::FactoryBasePtr getFactoryInstance()
 {
-    static boost::shared_ptr<PluginFactory> factory = boost::make_shared<PluginFactory>();
+    static boost::shared_ptr<JS::PluginFactory> factory = boost::make_shared<JS::PluginFactory>();
     return factory;
 }
-

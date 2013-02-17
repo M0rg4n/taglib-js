@@ -1,55 +1,47 @@
-/**********************************************************\
+#include "PluginAPI.h"
+#include "Plugin.h"
 
-  Auto-generated TagLib.cpp
-
-  This file contains the auto-generated main plugin object
-  implementation for the TagLib Audio Meta-Data Library project
-
-\**********************************************************/
-
-#include "TagLibAPI.h"
-
-#include "TagLib.h"
+using namespace JS;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @fn TagLib::StaticInitialize()
+/// @fn Plugin::StaticInitialize()
 ///
 /// @brief  Called from PluginFactory::globalPluginInitialize()
 ///
 /// @see FB::FactoryBase::globalPluginInitialize
 ///////////////////////////////////////////////////////////////////////////////
-void TagLib::StaticInitialize()
+void Plugin::StaticInitialize()
 {
     // Place one-time initialization stuff here; As of FireBreath 1.4 this should only
     // be called once per process
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @fn TagLib::StaticInitialize()
+/// @fn Plugin::StaticInitialize()
 ///
 /// @brief  Called from PluginFactory::globalPluginDeinitialize()
 ///
 /// @see FB::FactoryBase::globalPluginDeinitialize
 ///////////////////////////////////////////////////////////////////////////////
-void TagLib::StaticDeinitialize()
+void Plugin::StaticDeinitialize()
 {
     // Place one-time deinitialization stuff here. As of FireBreath 1.4 this should
     // always be called just before the plugin library is unloaded
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief  TagLib constructor.  Note that your API is not available
+/// @brief  Plugin constructor.  Note that your API is not available
 ///         at this point, nor the window.  For best results wait to use
 ///         the JSAPI object until the onPluginReady method is called
 ///////////////////////////////////////////////////////////////////////////////
-TagLib::TagLib()
+Plugin::Plugin()
 {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief  TagLib destructor.
+/// @brief  Plugin destructor.
 ///////////////////////////////////////////////////////////////////////////////
-TagLib::~TagLib()
+Plugin::~Plugin()
 {
     // This is optional, but if you reset m_api (the shared_ptr to your JSAPI
     // root object) and tell the host to free the retained JSAPI objects then
@@ -59,7 +51,7 @@ TagLib::~TagLib()
     m_host->freeRetainedObjects();
 }
 
-void TagLib::onPluginReady()
+void Plugin::onPluginReady()
 {
     // When this is called, the BrowserHost is attached, the JSAPI object is
     // created, and we are ready to interact with the page and such.  The
@@ -67,7 +59,7 @@ void TagLib::onPluginReady()
     // this point.
 }
 
-void TagLib::shutdown()
+void Plugin::shutdown()
 {
     // This will be called when it is time for the plugin to shut down;
     // any threads or anything else that may hold a shared_ptr to this
@@ -82,43 +74,14 @@ void TagLib::shutdown()
 ///
 /// Note that m_host is your BrowserHost and shared_ptr returns a
 /// FB::PluginCorePtr, which can be used to provide a
-/// boost::weak_ptr<TagLib> for your JSAPI class.
+/// boost::weak_ptr<Plugin> for your JSAPI class.
 ///
 /// Be very careful where you hold a shared_ptr to your plugin class from,
 /// as it could prevent your plugin class from getting destroyed properly.
 ///////////////////////////////////////////////////////////////////////////////
-FB::JSAPIPtr TagLib::createJSAPI()
+FB::JSAPIPtr Plugin::createJSAPI()
 {
     // m_host is the BrowserHost
-    return boost::make_shared<TagLibAPI>(FB::ptr_cast<TagLib>(shared_from_this()), m_host);
-}
-
-bool TagLib::onMouseDown(FB::MouseDownEvent *evt, FB::PluginWindow *)
-{
-    //printf("Mouse down at: %d, %d\n", evt->m_x, evt->m_y);
-    return false;
-}
-
-bool TagLib::onMouseUp(FB::MouseUpEvent *evt, FB::PluginWindow *)
-{
-    //printf("Mouse up at: %d, %d\n", evt->m_x, evt->m_y);
-    return false;
-}
-
-bool TagLib::onMouseMove(FB::MouseMoveEvent *evt, FB::PluginWindow *)
-{
-    //printf("Mouse move at: %d, %d\n", evt->m_x, evt->m_y);
-    return false;
-}
-bool TagLib::onWindowAttached(FB::AttachedEvent *evt, FB::PluginWindow *)
-{
-    // The window is attached; act appropriately
-    return false;
-}
-
-bool TagLib::onWindowDetached(FB::DetachedEvent *evt, FB::PluginWindow *)
-{
-    // The window is about to be detached; act appropriately
-    return false;
+    return boost::make_shared<PluginAPI>(FB::ptr_cast<Plugin>(shared_from_this()), m_host);
 }
 
