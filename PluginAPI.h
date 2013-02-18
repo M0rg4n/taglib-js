@@ -25,7 +25,7 @@ public:
     PluginAPI(const PluginPtr& plugin, const FB::BrowserHostPtr& host) :
         m_plugin(plugin), m_host(host)
     {
-        registerMethod("echo", make_method(this, &PluginAPI::echo));
+        registerMethod("parse", make_method(this, &PluginAPI::parse));
         
         // Read-only property
         registerProperty("version", make_property(this,
@@ -46,8 +46,8 @@ public:
     // Read-only property ${PROPERTY.ident}
     std::string get_version();
 
-    // Method echo
-    FB::variant echo(const FB::variant& msg);
+    // Create File object and return it through callback
+    void parse(const std::vector<unsigned char>& data, const FB::JSObjectPtr& callback);
 
 private:
     PluginWeakPtr m_plugin;

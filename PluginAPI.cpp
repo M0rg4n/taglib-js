@@ -2,29 +2,17 @@
 #include "variant_list.h"
 #include "DOM/Document.h"
 #include "global/config.h"
+#include <boost/make_shared.hpp>
 #include "PluginAPI.h"
+#include "File.h"
 
 using namespace JS;
 
-///////////////////////////////////////////////////////////////////////////////
-/// @fn FB::variant PluginAPI::echo(const FB::variant& msg)
-///
-/// @brief  Echos whatever is passed from Javascript.
-///         Go ahead and change it. See what happens!
-///////////////////////////////////////////////////////////////////////////////
-FB::variant PluginAPI::echo(const FB::variant& msg)
+void PluginAPI::parse(const std::vector<unsigned char> &data, const FB::JSObjectPtr &callback)
 {
-    return msg;
+    callback->InvokeAsync("", FB::variant_list_of(boost::make_shared<File>()));
 }
 
-///////////////////////////////////////////////////////////////////////////////
-/// @fn PluginPtr PluginAPI::getPlugin()
-///
-/// @brief  Gets a reference to the plugin that was passed in when the object
-///         was created.  If the plugin has already been released then this
-///         will throw a FB::script_error that will be translated into a
-///         javascript exception in the page.
-///////////////////////////////////////////////////////////////////////////////
 PluginPtr PluginAPI::getPlugin()
 {
     PluginPtr plugin(m_plugin.lock());
@@ -34,7 +22,6 @@ PluginPtr PluginAPI::getPlugin()
     return plugin;
 }
 
-// Read-only property version
 std::string PluginAPI::get_version()
 {
     return FBSTRING_PLUGIN_VERSION;
