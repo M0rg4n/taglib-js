@@ -10,6 +10,8 @@ set (CMAKE_BACKWARDS_COMPATIBILITY 2.6)
 
 Project(${PLUGIN_NAME})
 
+include(ExternalProject)
+
 file (GLOB GENERAL RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     [^.]*.cpp
     [^.]*.h
@@ -54,10 +56,20 @@ include_platform()
 # 	"${CMAKE_CURRENT_SOURCE_DIR}/sign/passphrase.txt"
 # 	${PROJECT_NAME})
 
-# Link TagLib C++ library
-SET(TAGLIB_ROOT ${PROJECT_SOURCE_DIR}/taglib/build)
-find_library(TAGLIB_LIBRARY tag PATHS ${TAGLIB_ROOT}/lib)
-find_path(TAGLIB_INCLUDE_DIRS taglib/tag.h PATHS ${TAGLIB_ROOT}/include)
-include_directories(${TAGLIB_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} ${TAGLIB_LIBRARY})
+# add TagLib C++ library
+set(TagLibCpp_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/TagLibCpp)
+ExternalProject_Add(
+    TagLibCpp_external
+    DOWNLOAD_COMMAND ""
+    SOURCE_DIR ${PROJECT_SOURCE_DIR}/taglib
+    CMAKE_ARGS -DCMAKE_BUILD_TYPE=Release -DENABLE_STATIC=ON -DBUILD_EXAMPLES=ON -DCMAKE_INSTALL_PREFIX=${TagLibCpp_LOCATION}
+)
+add_library(TagLibCpp UNKNOWN IMPORTED)
+set_property(TARGET TagLibCpp PROPERTY IMPORTED_LOCATION ${TagLibCpp_LOCATION}/lib/libtag.a)
+add_dependencies(TagLibCpp TagLibCpp_external)
+set(TagLibCpp_INCLUDE_DIRS ${TagLibCpp_LOCATION}/include)
+set(TagLibCpp_LIBRARIES TagLibCpp)
 
+# Link TagLib C++ library
+include_directories(${TAGLIB_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} ${TagLibCpp_LIBRARIES})
