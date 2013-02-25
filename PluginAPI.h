@@ -1,6 +1,8 @@
 #pragma once
+#include <vector>
 #include <string>
 #include <sstream>
+#include <sys/types.h>
 #include <boost/weak_ptr.hpp>
 #include "JSAPIAuto.h"
 #include "BrowserHost.h"
@@ -47,7 +49,7 @@ public:
     std::string get_version();
 
     // Create File object and return it through callback
-    void parse(const std::vector<unsigned char>& data, const FB::JSObjectPtr& callback);
+    void parse(const std::vector<uint8_t>& data, const FB::JSObjectPtr& callback);
 
 private:
     PluginWeakPtr m_plugin;

@@ -8,9 +8,9 @@
 
 using namespace JS;
 
-void PluginAPI::parse(const std::vector<unsigned char> &data, const FB::JSObjectPtr &callback)
+void PluginAPI::parse(const std::vector<uint8_t> &data, const FB::JSObjectPtr &callback)
 {
-    callback->InvokeAsync("", FB::variant_list_of(boost::make_shared<File>()));
+    callback->InvokeAsync("", FB::variant_list_of(boost::make_shared<File>(data.data(), data.size())));
 }
 
 PluginPtr PluginAPI::getPlugin()

@@ -71,5 +71,5 @@ set(TagLibCpp_INCLUDE_DIRS ${TagLibCpp_LOCATION}/include)
 set(TagLibCpp_LIBRARIES TagLibCpp)
 
 # Link TagLib C++ library
-include_directories(${TAGLIB_INCLUDE_DIRS})
-target_link_libraries(${PROJECT_NAME} ${TagLibCpp_LIBRARIES})
+include_directories(${TagLibCpp_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} ${TagLibCpp_LIBRARIES} -lz)
