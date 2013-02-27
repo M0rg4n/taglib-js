@@ -1,0 +1,17 @@
+<html>
+<head>
+<title>Plugin test page</title>
+</head>
+<script type="text/javascript" src="jquery-1.9.1.js"></script>
+<script type="text/javascript">
+$(function(){
+	plugin = $('#plugin');
+	$(document.body).append($('<p>').html('Plugin is ' + (plugin.valid ? 'valid' : 'invalid')));
+})
+</script>
+<body>
+<object id="plugin" type="application/x-taglib" width="0" height="0">
+    <param name="onload" value="pluginLoaded" />
+</object>
+</body>
+</html>
