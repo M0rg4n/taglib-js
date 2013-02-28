@@ -5,13 +5,11 @@
 <script type="text/javascript" src="jquery-1.9.1.js"></script>
 <script type="text/javascript">
 $(function(){
-	plugin = $('#plugin');
+	plugin = $('object#plugin').get(0);
 	$(document.body).append($('<p>').html('Plugin is ' + (plugin.valid ? 'valid' : 'invalid')));
 })
 </script>
 <body>
-<object id="plugin" type="application/x-taglib" width="0" height="0">
-    <param name="onload" value="pluginLoaded" />
-</object>
+<object id="plugin" type="application/x-taglib" width="0" height="0"></object>
 </body>
 </html>
