@@ -3,13 +3,36 @@
 <title>Plugin test page</title>
 </head>
 <script type="text/javascript" src="jquery-1.9.1.js"></script>
+<script type="text/javascript" src="base64-binary.js"></script>
 <script type="text/javascript">
 $(function(){
 	plugin = $('object#plugin').get(0);
 	$(document.body).append($('<p>').html('Plugin is ' + (plugin.valid ? 'valid' : 'invalid')));
+
+	$('#file').change(function(evt) {
+		var file = evt.target.files[0];
+		if (!file) {
+			return;
+		}
+		var reader = new FileReader();
+		reader.onload = function(e) {
+			var result = e.target.result;
+			var base64 = result.split(',')[1];
+			var binary = Base64Binary.decode(base64);
+			
+			plugin.parse(binary, function(file) {
+				var tag = file.tag();
+				console.info(tag.artist);
+				console.info(tag.album);
+				console.info(tag.title);
+			});
+		};
+		reader.readAsDataURL(file);
+	});
 })
 </script>
 <body>
-<object id="plugin" type="application/x-taglib" width="0" height="0"></object>
+	<object id="plugin" type="application/x-taglib" width="0" height="0"></object>
+	<input type="file" id="file" />
 </body>
 </html>
