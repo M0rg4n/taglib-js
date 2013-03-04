@@ -56,6 +56,8 @@ include_platform()
 # 	"${CMAKE_CURRENT_SOURCE_DIR}/sign/passphrase.txt"
 # 	${PROJECT_NAME})
 
+add_firebreath_library(log4cplus)
+
 # add TagLib C++ library
 set(TagLibCpp_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/TagLibCpp)
 string(REPLACE ";" " " VALUE_CMAKE_OSX_ARCHITECTURES "${CMAKE_OSX_ARCHITECTURES}")

@@ -3,6 +3,6 @@
 
 namespace JS {
 
-typedef std::string String;
+typedef std::wstring String;
 
 } /* namespace JS */

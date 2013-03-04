@@ -49,7 +49,7 @@ public:
     std::string get_version();
 
     // Create File object and return it through callback
-    void parse(const std::vector<uint8_t>& data, const FB::JSObjectPtr& callback);
+    void parse(FB::JSObjectPtr arrayBufferStream, const FB::JSObjectPtr &callback);
 
 private:
     PluginWeakPtr m_plugin;

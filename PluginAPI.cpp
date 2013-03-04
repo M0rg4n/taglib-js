@@ -5,12 +5,14 @@
 #include <boost/make_shared.hpp>
 #include "PluginAPI.h"
 #include "File.h"
+#include <boost/lexical_cast.hpp>
 
 using namespace JS;
 
-void PluginAPI::parse(const std::vector<uint8_t> &data, const FB::JSObjectPtr &callback)
+void PluginAPI::parse(FB::JSObjectPtr arrayBufferStream, const FB::JSObjectPtr &callback)
 {
-    callback->InvokeAsync("", FB::variant_list_of(boost::make_shared<File>(data.data(), data.size())));
+	boost::shared_ptr<File> file = boost::make_shared<File>(arrayBufferStream);
+    callback->InvokeAsync("", FB::variant_list_of(file));
 }
 
 PluginPtr PluginAPI::getPlugin()

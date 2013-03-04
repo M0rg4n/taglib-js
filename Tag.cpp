@@ -24,27 +24,27 @@ Tag::~Tag()
 
 String Tag::title() const
 {
-	return _tag->title().to8Bit();
+	return _tag->title().toWString();
 }
 
 String Tag::artist() const
 {
-	return _tag->artist().to8Bit();
+	return _tag->artist().toWString();
 }
 
 String Tag::album() const
 {
-	return _tag->album().to8Bit();
+	return _tag->album().toWString();
 }
 
 String Tag::comment() const
 {
-	return _tag->comment().to8Bit();
+	return _tag->comment().toWString();
 }
 
 String Tag::genre() const
 {
-	return _tag->genre().to8Bit();
+	return _tag->genre().toWString();
 }
 
 uint Tag::year() const

@@ -8,7 +8,7 @@ namespace JS {
 class File : public FB::JSAPIAuto
 {
 public:
-    File(const uint8_t* data, uint length);
+    File(FB::JSObjectPtr arrayBufferStream);
 
     virtual ~File();
 
