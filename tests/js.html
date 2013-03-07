@@ -3,6 +3,7 @@
 <title>Plugin test page</title>
 </head>
 <script type="text/javascript" src="jquery-1.9.1.js"></script>
+<script type="text/javascript" src="../../DataStream.js/DataStream.js"></script>
 <script type="text/javascript" src="../taglib.js"></script>
 <script type="text/javascript">
 $(function(){
@@ -21,7 +22,7 @@ $(function(){
 			var arrayBuffer = e.target.result;
 			var arrayBufferStream = new TagLib.ArrayBufferStream(arrayBuffer);
 			
-			plugin.parse(arrayBufferStream, function(file) {
+			/*plugin.parse(arrayBufferStream, function(file) {
 				var tag = file.tag();
 				console.info('artist', tag.artist);
 				console.info('album', tag.album);
@@ -31,7 +32,12 @@ $(function(){
 				console.info('year', tag.year);
 				console.info('track', tag.track);
 				console.info('isEmpty', tag.isEmpty());
-			});
+			});*/
+			
+			console.debug(arrayBufferStream.length());
+			arrayBufferStream.insert([1, 2, 3], 10, 3);
+			arrayBufferStream.seek(arrayBufferStream.tell() - 1, 0);
+			console.debug(arrayBufferStream.readBlock(10));
 			
 			console.debug('Parse time', new Date() - time0);
 		};
