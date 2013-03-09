@@ -59,21 +59,31 @@ include_platform()
 add_firebreath_library(log4cplus)
 
 # add TagLib C++ library
+add_library(TagLibCpp UNKNOWN IMPORTED)
 set(TagLibCpp_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/TagLibCpp)
-string(REPLACE ";" " " VALUE_CMAKE_OSX_ARCHITECTURES "${CMAKE_OSX_ARCHITECTURES}")
+if (MSVC)
+	set_property(TARGET TagLibCpp PROPERTY IMPORTED_LOCATION ${TagLibCpp_LOCATION}/lib/tag.lib)
+	set(TagLibCpp_external_CMAKE_ARGS
+		-DENABLE_STATIC_RUNTIME=ON
+	)
+else()
+	set_property(TARGET TagLibCpp PROPERTY IMPORTED_LOCATION ${TagLibCpp_LOCATION}/lib/libtag.a)
+	string(REPLACE ";" " " VALUE_CMAKE_OSX_ARCHITECTURES "${CMAKE_OSX_ARCHITECTURES}")
+	set(TagLibCpp_external_CMAKE_ARGS
+		-DCMAKE_BUILD_TYPE=Release
+		-DBUILD_FRAMEWORK=ON
+        -DCMAKE_OSX_ARCHITECTURES=${VALUE_CMAKE_OSX_ARCHITECTURES}
+	)
+endif()
 ExternalProject_Add(
     TagLibCpp_external
     DOWNLOAD_COMMAND ""
     SOURCE_DIR ${PROJECT_SOURCE_DIR}/taglib
-    CMAKE_ARGS -DBUILD_FRAMEWORK=ON
-               -DCMAKE_BUILD_TYPE=Release
+    CMAKE_ARGS ${TagLibCpp_external_CMAKE_ARGS}
                -DENABLE_STATIC=ON
                -DBUILD_EXAMPLES=OFF
                -DCMAKE_INSTALL_PREFIX=${TagLibCpp_LOCATION}
-               -DCMAKE_OSX_ARCHITECTURES=${VALUE_CMAKE_OSX_ARCHITECTURES}
 )
-add_library(TagLibCpp UNKNOWN IMPORTED)
-set_property(TARGET TagLibCpp PROPERTY IMPORTED_LOCATION ${TagLibCpp_LOCATION}/lib/libtag.a)
 add_dependencies(TagLibCpp TagLibCpp_external)
 set(TagLibCpp_INCLUDE_DIRS ${TagLibCpp_LOCATION}/include)
 set(TagLibCpp_LIBRARIES TagLibCpp)

@@ -1,5 +1,5 @@
 #pragma once
-#include <sys/types.h>
+#include <stdint.h>
 #include "JSAPIAuto.h"
 #include "taglib/tag.h"
 #include "taglib/tfile.h"
@@ -46,13 +46,13 @@ public:
     /*!
      * Returns the year; if there is no year set, this will return 0.
      */
-    uint year() const;
+    uint32_t year() const;
 
     /*!
      * Returns the track number; if there is no track number set, this will
      * return 0.
      */
-    uint track() const;
+    uint32_t track() const;
 
     /*!
      * Sets the title to \a s.  If \a s is String::null then this value will be
@@ -90,12 +90,12 @@ public:
     /*!
      * Sets the year to \a i.  If \a s is 0 then this value will be cleared.
      */
-    void setYear(uint i);
+    void setYear(uint32_t i);
 
     /*!
      * Sets the track to \a i.  If \a s is 0 then this value will be cleared.
      */
-    void setTrack(uint i);
+    void setTrack(uint32_t i);
 
     /*!
      * Returns true if the tag does not contain any data.  This should be

@@ -47,12 +47,12 @@ String Tag::genre() const
 	return _tag->genre().toWString();
 }
 
-uint Tag::year() const
+uint32_t Tag::year() const
 {
 	return _tag->year();
 }
 
-uint Tag::track() const
+uint32_t Tag::track() const
 {
 	return _tag->track();
 }
@@ -82,12 +82,12 @@ void Tag::setGenre(const String &s)
 	_tag->setGenre(TagLib::String(s));
 }
 
-void Tag::setYear(uint i)
+void Tag::setYear(uint32_t i)
 {
 	_tag->setYear(i);
 }
 
-void Tag::setTrack(uint i)
+void Tag::setTrack(uint32_t i)
 {
 	_tag->setTrack(i);
 }
