@@ -7,7 +7,7 @@ ArrayBufferStream::ArrayBufferStream(boost::shared_ptr<FB::JSObject> arrayBuffer
 	, _curr(0)
 {
 	FB::variant variant = _arrayBufferStream->Invoke("length", FB::variant_list_of());
-	_length = variant.cast<int>();
+	_length = variant.convert_cast<long>();
 }
 
 ArrayBufferStream::~ArrayBufferStream()
@@ -21,7 +21,7 @@ TagLib::FileName ArrayBufferStream::name() const
 
 TagLib::ByteVector ArrayBufferStream::readBlock(TagLib::ulong length)
 {
-	FB::variant variant = _arrayBufferStream->Invoke("readBlock", FB::variant_list_of(_curr)(_curr + length));
+	FB::variant variant = _arrayBufferStream->Invoke("readBlock", FB::variant_list_of(length)(_curr));
 	std::vector<char> block = variant.convert_cast<std::vector<char> >();
 	_curr += block.size();
 	return TagLib::ByteVector(block.data(), block.size());
@@ -29,23 +29,28 @@ TagLib::ByteVector ArrayBufferStream::readBlock(TagLib::ulong length)
 
 void ArrayBufferStream::writeBlock(const TagLib::ByteVector& data)
 {
-	throw std::exception();
+	_arrayBufferStream->Invoke("writeBlock", FB::variant_list_of(std::vector<char>(data.begin(), data.end()))(_curr));
+	_curr += data.size();
 }
 
 void ArrayBufferStream::insert(const TagLib::ByteVector& data,
 		TagLib::ulong start, TagLib::ulong replace)
 {
-	throw std::exception();
+	_arrayBufferStream->Invoke("insert", FB::variant_list_of(std::vector<char>(data.begin(), data.end()))(start)(replace));
+	_length += data.size() - replace;
+	_curr = start + data.size();
 }
 
 void ArrayBufferStream::removeBlock(TagLib::ulong start, TagLib::ulong length)
 {
-	throw std::exception();
+	_arrayBufferStream->Invoke("removeBlock", FB::variant_list_of(start)(length));
+	_length -= length;
+	_curr = _length;
 }
 
 bool ArrayBufferStream::readOnly() const
 {
-	return true;
+	return false;
 }
 
 bool ArrayBufferStream::isOpen() const
@@ -80,5 +85,6 @@ long ArrayBufferStream::length()
 
 void ArrayBufferStream::truncate(long length)
 {
-	throw std::exception();
+	_arrayBufferStream->Invoke("truncate", FB::variant_list_of(length));
+	_length = length;
 }

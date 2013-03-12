@@ -3,7 +3,6 @@
 <title>Plugin test page</title>
 </head>
 <script type="text/javascript" src="jquery-1.9.1.js"></script>
-<script type="text/javascript" src="../../DataStream.js/DataStream.js"></script>
 <script type="text/javascript" src="../taglib.js"></script>
 <script type="text/javascript">
 $(function(){
@@ -21,8 +20,9 @@ $(function(){
 			
 			var arrayBuffer = e.target.result;
 			var arrayBufferStream = new TagLib.ArrayBufferStream(arrayBuffer);
+			arrayBufferStream.debug = function() { console.debug.apply(console, arguments); };
 			
-			/*plugin.parse(arrayBufferStream, function(file) {
+			plugin.parse(arrayBufferStream, function(file) {
 				var tag = file.tag();
 				console.info('artist', tag.artist);
 				console.info('album', tag.album);
@@ -32,17 +32,64 @@ $(function(){
 				console.info('year', tag.year);
 				console.info('track', tag.track);
 				console.info('isEmpty', tag.isEmpty());
-			});*/
-			
-			console.debug(arrayBufferStream.length());
-			arrayBufferStream.insert([1, 2, 3], 10, 3);
-			arrayBufferStream.seek(arrayBufferStream.tell() - 1, 0);
-			console.debug(arrayBufferStream.readBlock(10));
+			});
 			
 			console.debug('Parse time', new Date() - time0);
 		};
 		reader.readAsArrayBuffer(file);
 	});
+	
+	// ArrayBufferStream tests
+	(function() {
+		var arrayEquals = function(a, b) {
+			if (a.length != b.length) {
+				return false;
+			}
+			for (var i = 0; i < a.length; ++i) {
+				if (a[i] != b[i]) {
+					return false;
+				}
+			}
+			return true;
+		}
+		
+		var stream = new TagLib.ArrayBufferStream([0, 1, 2, 3, 4]);
+		console.assert(stream.tell() == 0);
+		stream.seek(3, 0);
+		console.assert(stream.tell() == 3);
+		stream.seek(1, 1);
+		console.assert(stream.tell() == 4);
+		stream.seek(-2, 1);
+		console.assert(stream.tell() == 2);
+		stream.seek(2, 2);
+		console.assert(stream.tell() == 3);
+		
+		stream.seek(0);
+		console.assert(arrayEquals(stream.readBlock(3), [0, 1, 2]));
+		
+		stream.seek(3);
+		console.assert(arrayEquals(stream.readBlock(3), [3, 4]));
+		
+		stream.seek(0);
+		stream.truncate(6);
+		console.assert(arrayEquals(stream.readBlock(stream.length()), [0, 1, 2, 3, 4, 0]));
+		
+		stream.seek(0);
+		stream.truncate(4);
+		console.assert(arrayEquals(stream.readBlock(stream.length()), [0, 1, 2, 3]));
+		
+		stream = new TagLib.ArrayBufferStream([0, 1, 2, 3, 4]);
+		stream.insert([10, 11], 2, 1);
+		console.assert(arrayEquals(stream.readBlock(stream.length()), [3, 4]));
+		stream.seek(0);
+		console.assert(arrayEquals(stream.readBlock(stream.length()), [0, 1, 10, 11, 3, 4]));
+		
+		stream = new TagLib.ArrayBufferStream([0, 1, 2, 3, 4]);
+		stream.insert([10, 11], 1, 3);
+		console.assert(arrayEquals(stream.readBlock(stream.length()), [4]));
+		stream.seek(0);
+		console.assert(arrayEquals(stream.readBlock(stream.length()), [0, 10, 11, 4]));
+	})();
 })
 </script>
 <body>

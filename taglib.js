@@ -5,15 +5,25 @@ ArrayBufferStream: (function() {
 		this.buffer = new Int8Array(arrayBuffer);
 		this.position = 0;
 	};
-	Class.prototype.readBlock = function(length) {
-		console.debug("readBlock", length);
+	Class.prototype.readBlock = function(length, start) {
+		if (start === undefined) {
+			this.debug("readBlock", length);
+		} else {
+			this.debug("readBlock", length, start);
+			this.position = start;
+		}
 		var block = this.buffer.subarray(this.position, this.position + length);
-		this.position += length;
+		this.position += block.length;
 		return block;
 	};
 
-	Class.prototype.writeBlock = function(data) {
-		console.debug("writeBlock", data.length);
+	Class.prototype.writeBlock = function(data, start) {
+		if (start === undefined) {
+			this.debug("writeBlock", data.length);
+		} else {
+			this.debug("writeBlock", data.length, start);
+			this.position = start;
+		}
 		this.__writeBlock(data);
 	};
 	Class.prototype.__writeBlock = function(data) {
@@ -27,7 +37,7 @@ ArrayBufferStream: (function() {
 	};
 	
 	Class.prototype.insert = function(data, start, replace) {
-		console.debug("insert", data.length, start, replace);
+		this.debug("insert", data.length, start, replace);
 		var sizeDiff = data.length - replace;
 		if (sizeDiff < 0) {
 			this.__removeBlock(start + data.length, -sizeDiff);
@@ -44,7 +54,7 @@ ArrayBufferStream: (function() {
 	};
 
 	Class.prototype.removeBlock = function(start, length) {
-		console.debug("removeBlock", start, length);
+		this.debug("removeBlock", start, length);
 		this.__removeBlock(start, length);
 	};
 	Class.prototype.__removeBlock = function(start, length) {
@@ -60,7 +70,7 @@ ArrayBufferStream: (function() {
 	};
 	
 	Class.prototype.seek = function(offset, p) {
-		console.debug("seek", offset, p);
+		this.debug("seek", offset, p);
 		switch(p) {
 		case undefined:
 		case 0:
@@ -76,17 +86,17 @@ ArrayBufferStream: (function() {
 	};
 	
 	Class.prototype.tell = function() {
-		console.debug("tell", this.position);
+		this.debug("tell", this.position);
 	    return this.position;
 	};
 	
 	Class.prototype.length = function() {
-		console.debug("length", this.buffer.length);
+		this.debug("length", this.buffer.length);
 	    return this.buffer.length;
 	};
 	
 	Class.prototype.truncate = function(length) {
-		console.debug("truncate", length);
+		this.debug("truncate", length);
 	    this.__truncate(length);
 	};
 	Class.prototype.__truncate = function(length) {
@@ -98,6 +108,8 @@ ArrayBufferStream: (function() {
 	    	this.buffer = newBuffer;
 	    }
 	};
+	
+	Class.prototype.debug = function() { };//console.debug;
 	
 	return Class;
 })()
