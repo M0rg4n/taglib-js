@@ -21,7 +21,9 @@ TagLib::FileName ArrayBufferStream::name() const
 
 TagLib::ByteVector ArrayBufferStream::readBlock(TagLib::ulong length)
 {
-	FB::variant variant = _arrayBufferStream->Invoke("readBlock", FB::variant_list_of(length)(_curr));
+	FB::variant variant = _arrayBufferStream->Invoke("readBlock", FB::variant_list_of
+			(static_cast<int>(length))
+			(static_cast<int>(_curr)));
 	std::vector<char> block = variant.convert_cast<std::vector<char> >();
 	_curr += block.size();
 	return TagLib::ByteVector(block.data(), block.size());
@@ -29,21 +31,28 @@ TagLib::ByteVector ArrayBufferStream::readBlock(TagLib::ulong length)
 
 void ArrayBufferStream::writeBlock(const TagLib::ByteVector& data)
 {
-	_arrayBufferStream->Invoke("writeBlock", FB::variant_list_of(std::vector<char>(data.begin(), data.end()))(_curr));
+	_arrayBufferStream->Invoke("writeBlock", FB::variant_list_of
+			(std::vector<char>(data.begin(), data.end()))
+			(static_cast<int>(_curr)));
 	_curr += data.size();
 }
 
 void ArrayBufferStream::insert(const TagLib::ByteVector& data,
 		TagLib::ulong start, TagLib::ulong replace)
 {
-	_arrayBufferStream->Invoke("insert", FB::variant_list_of(std::vector<char>(data.begin(), data.end()))(start)(replace));
+	_arrayBufferStream->Invoke("insert", FB::variant_list_of
+			(std::vector<char>(data.begin(), data.end()))
+			(static_cast<int>(start))
+			(static_cast<int>(replace)));
 	_length += data.size() - replace;
 	_curr = start + data.size();
 }
 
 void ArrayBufferStream::removeBlock(TagLib::ulong start, TagLib::ulong length)
 {
-	_arrayBufferStream->Invoke("removeBlock", FB::variant_list_of(start)(length));
+	_arrayBufferStream->Invoke("removeBlock", FB::variant_list_of
+			(static_cast<int>(start))
+			(static_cast<int>(length)));
 	_length -= length;
 	_curr = _length;
 }
@@ -85,6 +94,6 @@ long ArrayBufferStream::length()
 
 void ArrayBufferStream::truncate(long length)
 {
-	_arrayBufferStream->Invoke("truncate", FB::variant_list_of(length));
+	_arrayBufferStream->Invoke("truncate", FB::variant_list_of(static_cast<int>(length)));
 	_length = length;
 }
