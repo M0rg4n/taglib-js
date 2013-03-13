@@ -32,106 +32,107 @@ body {
     filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);
 }
 </style>
+<script type="text/javascript" src="https://raw.github.com/eligrey/FileSaver.js/master/FileSaver.min.js"></script>
 <script type="text/javascript" src="jquery-1.9.1.js"></script>
 <script type="text/javascript" src="../taglib.js"></script>
 <script type="text/javascript">
-$(function(){
-	plugin = $('object#plugin').get(0);
-	$('#pluginState').html('Plugin is ' + (plugin.valid ? 'valid' : 'invalid'));
+$(function() {
+	$('#pluginState').html('Plugin is ' + (TagLib.isValid ? 'valid' : 'invalid'));
+	
+	TagLib.debug = function() { console.debug.apply(console, arguments); };
 
 	$('#file').change(function(evt) {
 		var file = evt.target.files[0];
 		if (!file) {
 			return;
 		}
-		var reader = new FileReader();
-		reader.onload = function(e) {
-			var time0 = new Date();
+		
+		TagLib.load(file, function(file) {
+			var tag = file.tag();
 			
-			var arrayBuffer = e.target.result;
-			var arrayBufferStream = new TagLib.ArrayBufferStream(arrayBuffer);
-			arrayBufferStream.debug = function() { console.debug.apply(console, arguments); };
+			$('#tag input[name="artist"]').val(tag.artist);
+			$('#tag input[name="album"]').val(tag.album);
+			$('#tag input[name="title"]').val(tag.title);
+			$('#tag input[name="comment"]').val(tag.comment);
+			$('#tag input[name="genre"]').val(tag.genre);
+			$('#tag input[name="year"]').val(tag.year);
+			$('#tag input[name="track"]').val(tag.track);
+			$('#tag input[name="isEmpty"]').val(tag.isEmpty());
 			
-			plugin.parse(arrayBufferStream, function(file) {
-				var tag = file.tag();
-				$('#tag input[name="artist"]').val(tag.artist);
-				$('#tag input[name="album"]').val(tag.album);
-				$('#tag input[name="title"]').val(tag.title);
-				$('#tag input[name="comment"]').val(tag.comment);
-				$('#tag input[name="genre"]').val(tag.genre);
-				$('#tag input[name="year"]').val(tag.year);
-				$('#tag input[name="track"]').val(tag.track);
-				$('#tag input[name="isEmpty"]').val(tag.isEmpty());
-				
-				$('#save').data('file', file);
-				$('#save').removeAttr('disabled');
-			});
-			
-			console.debug('Parse time', new Date() - time0);
-		};
-		reader.readAsArrayBuffer(file);
+			$('#save').data('file', file);
+			$('#save').removeAttr('disabled');
+		});
 	});
 	
 	$('#save').click(function() {
 		var file = $(this).data('file');
+		var tag = file.tag();
 		
-		var time0 = new Date();
-		file.save();
-		console.debug('Save time', new Date() - time0);
+		tag.artist = $('#tag input[name="artist"]').val();
+		tag.album = $('#tag input[name="album"]').val();
+		tag.title = $('#tag input[name="title"]').val();
+		tag.comment = $('#tag input[name="comment"]').val();
+		tag.genre = $('#tag input[name="genre"]').val();
+		tag.year = $('#tag input[name="year"]').val();
+		tag.track = $('#tag input[name="track"]').val();
+		
+		file.save(function(blob) {
+			saveAs(blob, file.name);
+		});
 	});
-	
-	// ArrayBufferStream tests
-	(function() {
-		var arrayEquals = function(a, b) {
-			if (a.length != b.length) {
+});
+
+// ArrayBufferStream tests
+(function() {
+	var arrayEquals = function(a, b) {
+		if (a.length != b.length) {
+			return false;
+		}
+		for (var i = 0; i < a.length; ++i) {
+			if (a[i] != b[i]) {
 				return false;
 			}
-			for (var i = 0; i < a.length; ++i) {
-				if (a[i] != b[i]) {
-					return false;
-				}
-			}
-			return true;
 		}
-		
-		var stream = new TagLib.ArrayBufferStream([0, 1, 2, 3, 4]);
-		console.assert(stream.tell() == 0);
-		stream.seek(3, 0);
-		console.assert(stream.tell() == 3);
-		stream.seek(1, 1);
-		console.assert(stream.tell() == 4);
-		stream.seek(-2, 1);
-		console.assert(stream.tell() == 2);
-		stream.seek(2, 2);
-		console.assert(stream.tell() == 3);
-		
-		stream.seek(0);
-		console.assert(arrayEquals(stream.readBlock(3), [0, 1, 2]));
-		
-		stream.seek(3);
-		console.assert(arrayEquals(stream.readBlock(3), [3, 4]));
-		
-		stream.seek(0);
-		stream.truncate(6);
-		console.assert(arrayEquals(stream.readBlock(stream.length()), [0, 1, 2, 3, 4, 0]));
-		
-		stream.seek(0);
-		stream.truncate(4);
-		console.assert(arrayEquals(stream.readBlock(stream.length()), [0, 1, 2, 3]));
-		
-		stream = new TagLib.ArrayBufferStream([0, 1, 2, 3, 4]);
-		stream.insert([10, 11], 2, 1);
-		console.assert(arrayEquals(stream.readBlock(stream.length()), [3, 4]));
-		stream.seek(0);
-		console.assert(arrayEquals(stream.readBlock(stream.length()), [0, 1, 10, 11, 3, 4]));
-		
-		stream = new TagLib.ArrayBufferStream([0, 1, 2, 3, 4]);
-		stream.insert([10, 11], 1, 3);
-		console.assert(arrayEquals(stream.readBlock(stream.length()), [4]));
-		stream.seek(0);
-		console.assert(arrayEquals(stream.readBlock(stream.length()), [0, 10, 11, 4]));
-	})();
-})
+		return true;
+	}
+	
+	var stream = new TagLib.ArrayBufferStream([0, 1, 2, 3, 4]);
+	console.assert(stream.tell() == 0);
+	stream.seek(3, 0);
+	console.assert(stream.tell() == 3);
+	stream.seek(1, 1);
+	console.assert(stream.tell() == 4);
+	stream.seek(-2, 1);
+	console.assert(stream.tell() == 2);
+	stream.seek(2, 2);
+	console.assert(stream.tell() == 3);
+	
+	stream.seek(0);
+	console.assert(arrayEquals(stream.readBlock(3), [0, 1, 2]));
+	
+	stream.seek(3);
+	console.assert(arrayEquals(stream.readBlock(3), [3, 4]));
+	
+	stream.seek(0);
+	stream.truncate(6);
+	console.assert(arrayEquals(stream.readBlock(stream.length()), [0, 1, 2, 3, 4, 0]));
+	
+	stream.seek(0);
+	stream.truncate(4);
+	console.assert(arrayEquals(stream.readBlock(stream.length()), [0, 1, 2, 3]));
+	
+	stream = new TagLib.ArrayBufferStream([0, 1, 2, 3, 4]);
+	stream.insert([10, 11], 2, 1);
+	console.assert(arrayEquals(stream.readBlock(stream.length()), [3, 4]));
+	stream.seek(0);
+	console.assert(arrayEquals(stream.readBlock(stream.length()), [0, 1, 10, 11, 3, 4]));
+	
+	stream = new TagLib.ArrayBufferStream([0, 1, 2, 3, 4]);
+	stream.insert([10, 11], 1, 3);
+	console.assert(arrayEquals(stream.readBlock(stream.length()), [4]));
+	stream.seek(0);
+	console.assert(arrayEquals(stream.readBlock(stream.length()), [0, 10, 11, 4]));
+})();
 </script>
 </head>
 <body>
@@ -146,7 +147,6 @@ $(function(){
       </div>
     </div>
 	<div class="container">
-		<object id="plugin" type="application/x-taglib" width="0" height="0"></object>
 		<div class="row">
 			<div class="span2">
 				<div class="browse-button">

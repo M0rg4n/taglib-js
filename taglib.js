@@ -1,4 +1,6 @@
-TagLib = {
+TagLib = (function() {
+	
+var instance = {
 		
 ArrayBufferStream: (function() {
 	Class = function(arrayBuffer) {
@@ -109,9 +111,80 @@ ArrayBufferStream: (function() {
 	    }
 	};
 	
-	Class.prototype.debug = function() { };//console.debug;
+	Class.prototype.debug = function() { instance.debug.apply(this, arguments); };
 	
 	return Class;
-})()
-		
-}
+})(),
+
+File: (function() {
+	Class = function(nativeFileObject, arrayBufferStream, originFilename) {
+		this.__file = nativeFileObject;
+		this.__stream = arrayBufferStream;
+		this.name = originFilename;
+	};
+	
+	Class.prototype.tag = function() {
+		return this.__file.tag();
+	};
+	
+	Class.prototype.save = function(callback) {
+		var startTime = new Date();
+		this.__file.save();
+		var blob = new Blob([this.__stream.buffer], {type: "application/octet-binary"});
+		this.debug('Save time', new Date() - startTime);
+		callback(blob);
+	};
+	
+	Class.prototype.debug = function() { instance.debug.apply(this, arguments); };
+	
+	return Class;
+})(),
+
+load: function(file, callback) {
+	var reader = new FileReader();
+	var self = this;
+	reader.onload = function(e) {
+		var startTime = new Date();
+		var arrayBuffer = e.target.result;
+		var arrayBufferStream = new self.ArrayBufferStream(arrayBuffer);
+		self.plugin.parse(arrayBufferStream, function(nativeFileObject) {
+			var fileObject = new self.File(nativeFileObject, arrayBufferStream, file.name);
+			self.debug('Parse time', new Date() - startTime);
+			callback(fileObject);
+		});
+	};
+	reader.readAsArrayBuffer(file);
+},
+
+debug: function() { }
+
+};
+
+var plugin = null;
+Object.defineProperty(instance, 'plugin', {
+	get: function() {
+		if (!document.body) {
+			throw 'TagLib.plugin: window.document has not loaded yet!';
+		}
+		if (!plugin) {
+			plugin = document.createElement('object');
+			plugin.setAttribute('type', 'application/x-taglib');
+			plugin.setAttribute('width', 0);
+			plugin.setAttribute('height', 0);
+			document.body.appendChild(plugin);
+		}
+		return plugin;
+	}
+});
+
+Object.defineProperty(instance, 'isValid', {
+	get: function() {
+		if (!instance.plugin) {
+			return;
+		}
+		return plugin.valid;
+	}
+});
+
+return instance;
+})();
