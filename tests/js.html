@@ -1,13 +1,43 @@
+<!DOCTYPE html>
 <html>
 <head>
 <title>Plugin test page</title>
-</head>
+<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+<style>
+body {
+	padding-top: 60px;
+	padding-bottom: 40px;
+}
+#tag {
+	width: auto;
+	display: table-cell;
+}
+.browse-button { 
+    cursor: pointer;
+    float: left;
+    overflow: hidden;
+    position: relative;
+}
+.browse-button input[type="button"] { 
+    cursor: pointer;
+}
+.browse-button input[type="file"] { 
+    width: 150px;
+    heigth: 100px;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    cursor: pointer;
+    opacity: 0;
+    filter:progid:DXImageTransform.Microsoft.Alpha(opacity=0);
+}
+</style>
 <script type="text/javascript" src="jquery-1.9.1.js"></script>
 <script type="text/javascript" src="../taglib.js"></script>
 <script type="text/javascript">
 $(function(){
 	plugin = $('object#plugin').get(0);
-	$(document.body).append($('<p>').html('Plugin is ' + (plugin.valid ? 'valid' : 'invalid')));
+	$('#pluginState').html('Plugin is ' + (plugin.valid ? 'valid' : 'invalid'));
 
 	$('#file').change(function(evt) {
 		var file = evt.target.files[0];
@@ -24,19 +54,30 @@ $(function(){
 			
 			plugin.parse(arrayBufferStream, function(file) {
 				var tag = file.tag();
-				console.info('artist', tag.artist);
-				console.info('album', tag.album);
-				console.info('title', tag.title);
-				console.info('comment', tag.comment);
-				console.info('genre', tag.genre);
-				console.info('year', tag.year);
-				console.info('track', tag.track);
-				console.info('isEmpty', tag.isEmpty());
+				$('#tag input[name="artist"]').val(tag.artist);
+				$('#tag input[name="album"]').val(tag.album);
+				$('#tag input[name="title"]').val(tag.title);
+				$('#tag input[name="comment"]').val(tag.comment);
+				$('#tag input[name="genre"]').val(tag.genre);
+				$('#tag input[name="year"]').val(tag.year);
+				$('#tag input[name="track"]').val(tag.track);
+				$('#tag input[name="isEmpty"]').val(tag.isEmpty());
+				
+				$('#save').data('file', file);
+				$('#save').removeAttr('disabled');
 			});
 			
 			console.debug('Parse time', new Date() - time0);
 		};
 		reader.readAsArrayBuffer(file);
+	});
+	
+	$('#save').click(function() {
+		var file = $(this).data('file');
+		
+		var time0 = new Date();
+		file.save();
+		console.debug('Save time', new Date() - time0);
 	});
 	
 	// ArrayBufferStream tests
@@ -92,8 +133,44 @@ $(function(){
 	})();
 })
 </script>
+</head>
 <body>
-	<object id="plugin" type="application/x-taglib" width="0" height="0"></object>
-	<input type="file" id="file" />
+	<div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="https://github.com/dizel3d/taglib-js" target="_blank">TagLib Audio Meta-Data Library port for web browsers</a>
+          <div class="nav-collapse collapse">
+          	<div class="navbar-text pull-right" id="pluginState"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+	<div class="container">
+		<object id="plugin" type="application/x-taglib" width="0" height="0"></object>
+		<div class="row">
+			<div class="span2">
+				<div class="browse-button">
+					<p>
+				    <input type="button" class="btn btn-primary" value="Load MPEG audio">
+				    <input type="file" id="file">
+				    </p>
+				</div>
+				<p><input id="save" disabled="disabled" class="btn" type="button" value="Save" style="width: 100%"></p>
+			</div>
+			<div class="span2 offset1" id="tag" align="right">
+				<div>artist <input type="text" name="artist" /></div>
+				<div>album <input type="text" name="album" /></div>
+				<div>title <input type="text" name="title" /></div>
+				<div>comment <input type="text" name="comment" /></div>
+				<div>genre <input type="text" name="genre" /></div>
+				<div>year <input type="text" name="year" /></div>
+				<div>track <input type="text" name="track" /></div>
+				<div>isEmpty <input type="text" name="isEmpty" readonly="readonly" /></div>
+			</div>
+			<div class="span5" align="center">
+				<img style="border: 5px solid #ccc" src="taglib.png">
+			</div>
+		</div>
+	</div>
 </body>
 </html>

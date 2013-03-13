@@ -11,6 +11,7 @@ File::File(FB::JSObjectPtr arrayBufferStream)
 	, _file(boost::make_shared<TagLib::MPEG::File>(_stream.get(), TagLib::ID3v2::FrameFactory::instance()))
 {
     registerMethod("tag", make_method(this, &File::tag));
+    registerMethod("save", make_method(this, &File::save));
 }
 
 File::~File()
@@ -21,4 +22,9 @@ File::~File()
 boost::shared_ptr<Tag> File::tag()
 {
 	return boost::make_shared<Tag>(_file);
+}
+
+void File::save()
+{
+	_file->save();
 }

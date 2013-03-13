@@ -14,6 +14,8 @@ public:
 
     boost::shared_ptr<Tag> tag();
 
+    void save();
+
     /* TODO
     boost::shared_ptr<std::map<String, boost::shared_ptr<StringList>>> properties() const;
 
