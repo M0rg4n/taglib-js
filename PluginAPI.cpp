@@ -9,7 +9,12 @@
 
 using namespace JS;
 
-void PluginAPI::parse(FB::JSObjectPtr arrayBufferStream, const FB::JSObjectPtr &callback)
+void PluginAPI::load(FB::JSObjectPtr arrayBufferStream, const FB::JSObjectPtr &callback)
+{
+	boost::thread t(boost::bind(&PluginAPI::loading, this, arrayBufferStream, callback));
+}
+
+void PluginAPI::loading(FB::JSObjectPtr arrayBufferStream, const FB::JSObjectPtr &callback)
 {
 	boost::shared_ptr<File> file = boost::make_shared<File>(arrayBufferStream);
     callback->InvokeAsync("", FB::variant_list_of(file));

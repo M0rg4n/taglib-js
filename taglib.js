@@ -118,6 +118,7 @@ ArrayBufferStream: (function() {
 
 File: (function() {
 	Class = function(nativeFileObject, arrayBufferStream, originFilename) {
+		this.__isSaving = false;
 		this.__file = nativeFileObject;
 		this.__stream = arrayBufferStream;
 		this.name = originFilename;
@@ -128,11 +129,18 @@ File: (function() {
 	};
 	
 	Class.prototype.save = function(callback) {
+		if (this.__isSaving) {
+			throw 'This file is being saved now!';
+		}
+		this.__isSaving = true;
 		var startTime = new Date();
-		this.__file.save();
-		var blob = new Blob([this.__stream.buffer], {type: "application/octet-binary"});
-		this.debug('Save time', new Date() - startTime);
-		callback(blob);
+		var self = this;
+		self.__file.save(function() {
+			self.__isSaving = false;
+			var blob = new Blob([self.__stream.buffer], {type: "application/octet-binary"});
+			self.debug('Save time', new Date() - startTime);
+			callback.call(self, blob);
+		});
 	};
 	
 	Class.prototype.debug = function() { instance.debug.apply(this, arguments); };
@@ -141,16 +149,16 @@ File: (function() {
 })(),
 
 load: function(file, callback) {
+	var startTime = new Date();
 	var reader = new FileReader();
 	var self = this;
 	reader.onload = function(e) {
-		var startTime = new Date();
 		var arrayBuffer = e.target.result;
 		var arrayBufferStream = new self.ArrayBufferStream(arrayBuffer);
-		self.plugin.parse(arrayBufferStream, function(nativeFileObject) {
+		self.plugin.load(arrayBufferStream, function(nativeFileObject) {
 			var fileObject = new self.File(nativeFileObject, arrayBufferStream, file.name);
-			self.debug('Parse time', new Date() - startTime);
-			callback(fileObject);
+			self.debug('Load time', new Date() - startTime);
+			callback.call(self, fileObject);
 		});
 	};
 	reader.readAsArrayBuffer(file);

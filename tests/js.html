@@ -47,6 +47,9 @@ $(function() {
 			return;
 		}
 		
+		var $save = $('#save');
+		
+		$save.attr('disabled', 'disabled');
 		TagLib.load(file, function(file) {
 			var tag = file.tag();
 			
@@ -59,13 +62,14 @@ $(function() {
 			$('#tag input[name="track"]').val(tag.track);
 			$('#tag input[name="isEmpty"]').val(tag.isEmpty());
 			
-			$('#save').data('file', file);
-			$('#save').removeAttr('disabled');
+			$save.data('file', file);
+			$save.removeAttr('disabled');
 		});
 	});
 	
 	$('#save').click(function() {
-		var file = $(this).data('file');
+		var $self = $(this);
+		var file = $self.data('file');
 		var tag = file.tag();
 		
 		tag.artist = $('#tag input[name="artist"]').val();
@@ -76,8 +80,10 @@ $(function() {
 		tag.year = $('#tag input[name="year"]').val();
 		tag.track = $('#tag input[name="track"]').val();
 		
+		$self.attr('disabled', 'disabled');
 		file.save(function(blob) {
 			saveAs(blob, file.name);
+			$self.removeAttr('disabled');
 		});
 	});
 });

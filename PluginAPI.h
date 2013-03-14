@@ -27,7 +27,7 @@ public:
     PluginAPI(const PluginPtr& plugin, const FB::BrowserHostPtr& host) :
         m_plugin(plugin), m_host(host)
     {
-        registerMethod("parse", make_method(this, &PluginAPI::parse));
+        registerMethod("load", make_method(this, &PluginAPI::load));
         
         // Read-only property
         registerProperty("version", make_property(this,
@@ -49,11 +49,13 @@ public:
     std::string get_version();
 
     // Create File object and return it through callback
-    void parse(FB::JSObjectPtr arrayBufferStream, const FB::JSObjectPtr &callback);
+    void load(FB::JSObjectPtr arrayBufferStream, const FB::JSObjectPtr &callback);
 
 private:
     PluginWeakPtr m_plugin;
     FB::BrowserHostPtr m_host;
+
+    void loading(FB::JSObjectPtr arrayBufferStream, const FB::JSObjectPtr &callback);
 };
 
 }

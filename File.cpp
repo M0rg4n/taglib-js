@@ -24,7 +24,13 @@ boost::shared_ptr<Tag> File::tag()
 	return boost::make_shared<Tag>(_file);
 }
 
-void File::save()
+void File::save(const FB::JSObjectPtr &callback)
+{
+	boost::thread t(boost::bind(&File::saving, this, callback));
+}
+
+void File::saving(const FB::JSObjectPtr &callback)
 {
 	_file->save();
+	callback->InvokeAsync("", FB::variant_list_of());
 }
